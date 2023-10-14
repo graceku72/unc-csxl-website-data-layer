@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from user_service import UserService, User
 
 app = FastAPI()
@@ -10,14 +10,21 @@ def get_users(user_service: UserService = Depends()) -> list[User]:
 
 @app.post("/api/users")
 def new_user(user: User, user_service: UserService = Depends()) -> User:
-    raise NotImplemented()
-
+    try:
+        return user_service.create(user)
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
 
 @app.get("/api/users/{pid}", responses={404: {"model": None}})
 def get_user(pid: int, user_service: UserService = Depends()) -> User:
-    raise NotImplemented()
-
+    try:
+        return user_service.get(pid)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @app.delete("/api/users/{pid}")
 def delete_user(pid: int, user_service = Depends(UserService)):
-    raise NotImplemented()
+    try:
+        user_service.delete(pid)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
