@@ -19,11 +19,6 @@ class UserService:
         return [entity.to_model() for entity in entities]
 
     def create(self, user: User) -> User:
-        # userEntity = UserEntity(pid=user.pid, first_name=user.first_name, last_name=user.last_name)
-        # query = insert(UserEntity.from_model(UserEntity, user))
-        # self._session.flush()
-        #return user
-
         user_entity: UserEntity = UserEntity.from_model(user)
         self._session.add(user_entity)
         self._session.commit()
@@ -31,15 +26,6 @@ class UserService:
 
 
     def get(self, pid: int) -> User | None:
-        #return self._session.execute(select(UserEntity).where(UserEntity.pid == pid))
-        
-        # user_entity = self._session.get(UserEntity, pid)
-        # if user_entity:
-        #     return user_entity.to_model() 
-        # else:
-        #     return None
-        #     #raise ValueError("User cannot be found")
-
         query = select(UserEntity).where(UserEntity.pid == pid)
         entity = self._session.scalars(query).first()
         if entity:
@@ -53,6 +39,5 @@ class UserService:
         if entity:
             self._session.delete(entity)
             self._session.commit()
-            # self._session.flush()
         else:
             raise ValueError("User cannot be found")
